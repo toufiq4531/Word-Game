@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Word Grid Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <h1>Word Grid Game (20x20)</h1>
+
+  <div id="scoreboard">
+    <p>🔴 <strong>Player 1:</strong> <span id="score1">0</span></p>
+    <p>🔵 <strong>Player 2:</strong> <span id="score2">0</span></p>
+
+    <p id="lastScored" style="margin-top: 10px; font-weight: bold; color: white;"></p>
+
+    <button id="restartBtn">🔄 Restart Game</button>
+
+    <p><strong>Current Turn:</strong> <span id="currentPlayer">Player 1</span></p>
+
+    <audio id="successSound" src="success.mp3" preload="auto"></audio>
+    <audio id="errorSound" src="error.mp3" preload="auto"></audio>
+
+    <button id="toggleMusicBtn" title="Toggle Music" style="background: none; border: none; cursor: pointer; font-size: 24px;">
+      🔇
+    </button>
+    <audio id="bgMusic" src="bgmusic.mp3" loop></audio>
+
+  </div>
+
+  <div id="grid"></div>
+
+  <script src="words.js"></script>
+  <script src="script.js"></script>
+</body>
+
+<footer style="margin-top: 40px; font-size: 0.9rem; color: #374151;">
+    <p>Developed by <strong>Toufiqul Islam Pranto</strong></p>
+    <div style="margin-top: 8px;">
+        <a href="https://github.com/toufiq4531" target="_blank" style="margin: 0 10px;">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/github.svg" alt="GitHub" width="24" height="24">
+        </a>
+        <a href="https://www.linkedin.com/in/islam-mohammad-tofiqul/" target="_blank" style="margin: 0 10px;">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg" alt="LinkedIn" width="24" height="24">
+        </a>
+        <a href="https://www.facebook.com/pranto.toufiq404" target="_blank" style="margin: 0 10px;">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/facebook.svg" alt="Facebook" width="24" height="24">
+        </a>
+        <a href="https://www.instagram.com/405.found.toufiq/" target="_blank" style="margin: 0 10px;">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/instagram.svg" alt="Instagram" width="24" height="24">
+        </a>
+        <a href="mailto:pranto.toufiq001@gmail.com" style="margin: 0 10px;">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/gmail.svg" alt="Email" width="24" height="24">
+        </a>
+    </div>
+</footer>
+
+
+</html>

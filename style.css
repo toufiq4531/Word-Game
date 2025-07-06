@@ -1,0 +1,153 @@
+/* General Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom right, #f3f4f6, #dbeafe);
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Title */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #1e3a8a;
+}
+
+/* Scoreboard */
+#scoreboard {
+    background-color: #1d4ed8;
+    color: white;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    display: inline-block;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid */
+#grid {
+    display: grid;
+    grid-template-columns: repeat(20, 32px);
+    grid-template-rows: repeat(20, 32px);
+    gap: 3px;
+    justify-content: center;
+    margin: auto;
+    max-width: fit-content;
+}
+
+/* Cells */
+.grid-cell {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    text-transform: uppercase;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background-color: white;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 36px;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: manipulation;
+}
+
+
+
+.grid-cell:focus.player1 {
+    outline: 2px solid dodgerblue;
+    background-color: #eff6ff;
+}
+
+.grid-cell:focus.player2 {
+    outline: 2px solid crimson;
+    background-color: #ffe4e6;
+}
+
+/* Highlighted Word */
+.grid-cell[style*="background-color: lightgreen"] {
+    background-color: #86efac !important;
+    /* light green */
+    font-weight: bold;
+    color: #065f46;
+}
+
+/* Last Scored Word */
+#lastScored {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #15803d;
+}
+
+/* Restart Button */
+#restartBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#restartBtn:hover {
+    background-color: #2563eb;
+}
+
+#toggleMusicBtn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #1e3a8a;
+    transition: transform 0.1s ease;
+}
+
+#toggleMusicBtn:hover {
+    transform: scale(1.1);
+}
+
+
+/* For Mobile Friendliness */
+#grid {
+    display: grid;
+    grid-template-columns: repeat(20, 32px);
+    grid-template-rows: repeat(20, 32px);
+    gap: 3px;
+    justify-content: center;
+    margin: auto;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+
+@media (max-width: 600px) {
+    #scoreboard {
+        font-size: 1rem;
+        padding: 8px 12px;
+    }
+
+    #lastScored {
+        font-size: 0.9rem;
+    }
+
+    #restartBtn {
+        font-size: 0.9rem;
+        padding: 8px 14px;
+    }
+
+    #toggleMusicBtn {
+        font-size: 20px;
+        top: 12px;
+        right: 12px;
+    }
+}
