@@ -1,17 +1,22 @@
 const successSound = document.getElementById("successSound");
 const errorSound = document.getElementById("errorSound");
-
-
-const gridSize = 20; // 20x20 grid
-const grid = document.getElementById('grid');
-
-const scoredWords = new Set();
-
-
 const bgMusic = document.getElementById("bgMusic");
 const toggleBtn = document.getElementById("toggleMusicBtn");
-let musicPlaying = false;
+const grid = document.getElementById('grid');
 
+const score1 = document.getElementById('score1');
+const score2 = document.getElementById('score2');
+const currentPlayerDisplay = document.getElementById('currentPlayer');
+const lastScored = document.getElementById('lastScored');
+
+const scoredWords = new Set();
+const gridSize = 20;
+let currentPlayer = 1;
+let musicPlaying = false;
+let gameEnded = false;
+
+
+// Music toggle button
 toggleBtn.addEventListener("click", () => {
     if (!musicPlaying) {
         bgMusic.play()
@@ -29,7 +34,7 @@ toggleBtn.addEventListener("click", () => {
     }
 });
 
-
+// Grid creation
 function createGrid() {
     for (let row = 0; row < gridSize; row++) {
         for (let col = 0; col < gridSize; col++) {
@@ -39,28 +44,18 @@ function createGrid() {
             cell.classList.add('grid-cell');
             cell.dataset.row = row;
             cell.dataset.col = col;
-            //cell.disabled = true;
             grid.appendChild(cell);
+
+            // Input handling per cell
+            cell.addEventListener('click', () => handleClick(cell));
         }
     }
 }
-
 createGrid();
 
-let currentPlayer = 1;
-const score1 = document.getElementById('score1');
-const score2 = document.getElementById('score2');
-const currentPlayerDisplay = document.getElementById('currentPlayer');
-
-// Enable all cells for clicking
-const cells = document.querySelectorAll('.grid-cell');
-cells.forEach(cell => {
-    cell.addEventListener('click', () => handleClick(cell));
-});
-
-
+// Handle clicking on a cell
 function handleClick(cell) {
-    if (cell.disabled || cell.value !== '') return;
+    if (gameEnded || cell.disabled || cell.value !== '') return;
 
     cell.classList.add(currentPlayer === 1 ? 'player1' : 'player2');
     cell.focus();
@@ -68,52 +63,41 @@ function handleClick(cell) {
     const handleInput = () => {
         let letter = cell.value.toUpperCase();
 
-        // Only allow A-Z letters
         if (!/^[A-Z]$/.test(letter)) {
-            errorSound.play(); // 🔊 play error
+            errorSound.play();
             alert('❌ Only one letter A-Z allowed!');
             cell.value = '';
-            cell.focus(); // Keep focus so they can retry
+            cell.focus();
             return;
         }
 
-
-        // Set the value as uppercase
+        // ✅ Valid input
         cell.value = letter;
         cell.disabled = true;
-
-        // ✅ Check for words and score
-        checkAndScoreWords();
-
-        // ✅ Switch player
-        currentPlayer = currentPlayer === 1 ? 2 : 1;
-        currentPlayerDisplay.textContent = `Player ${currentPlayer}`;
-
-        // 🧹 Remove input listener so it doesn't trigger again
         cell.removeEventListener('input', handleInput);
-
-        // Clear the cell's class for player
         cell.classList.remove('player1', 'player2');
 
+        checkAndScoreWords();
+
+        // 🔁 Switch turn
+        currentPlayer = currentPlayer === 1 ? 2 : 1;
+        currentPlayerDisplay.textContent = `Player ${currentPlayer}`;
     };
 
-    // Attach only once for this cell
+    // Attach input listener once
     cell.addEventListener('input', handleInput, { once: true });
-
-    // 🚫 Prevent multiple clicks from re-adding the input listener
-    cell.removeEventListener('click', () => handleClick(cell));
 }
 
-
+// Word scoring and checking
 function checkAndScoreWords() {
     let newScore = 0;
 
-    // 1. Clear all highlights from previous turn
+    // Clear previous highlights
     document.querySelectorAll('.grid-cell').forEach(cell => {
         cell.style.backgroundColor = '';
     });
 
-    // 2. Read the board into a 2D array
+    // Build 2D board array
     let board = [];
     for (let r = 0; r < gridSize; r++) {
         let row = [];
@@ -124,31 +108,36 @@ function checkAndScoreWords() {
         board.push(row);
     }
 
-    // Helper function to process found words and highlight cells
-    function processWord(word, positions) {
-        if (word.length >= 3 && WORD_LIST.has(word) && !scoredWords.has(word)) {
-            newScore += word.length;
-            scoredWords.add(word);
+    // Helper: Process a valid word
+    function processWord(fullWord, positions) {
+        if (fullWord.length < 3) return;
 
-            successSound.play();
+        for (let i = 0; i <= fullWord.length - 3; i++) {
+            for (let j = i + 3; j <= fullWord.length; j++) {
+                const subWord = fullWord.slice(i, j);
+                const subPositions = positions.slice(i, j);
 
-            // Highlight the word's cells
-            positions.forEach(pos => {
-                const cell = document.querySelector(`[data-row="${pos.row}"][data-col="${pos.col}"]`);
-                if (cell) cell.style.backgroundColor = 'lightgreen';
-            });
+                if (WORD_LIST.has(subWord) && !scoredWords.has(subWord)) {
+                    newScore += subWord.length;
+                    scoredWords.add(subWord);
+                    successSound.play();
 
-            // Display scored word
-            const lastScored = document.getElementById('lastScored');
-            lastScored.textContent = `✅ Player ${currentPlayer} scored: "${word}" (+${word.length} points)`;
+                    // Highlight cells
+                    subPositions.forEach(pos => {
+                        const cell = document.querySelector(`[data-row="${pos.row}"][data-col="${pos.col}"]`);
+                        if (cell) cell.style.backgroundColor = 'lightgreen';
+                    });
+
+                    lastScored.textContent = `✅ Player ${currentPlayer} scored: "${subWord}" (+${subWord.length} points)`;
+                }
+            }
         }
     }
 
 
-    // 3. Check rows for words
+    // Horizontal check
     for (let r = 0; r < gridSize; r++) {
-        let word = '';
-        let positions = [];
+        let word = '', positions = [];
         for (let c = 0; c <= gridSize; c++) {
             let char = c < gridSize ? board[r][c] : '';
             if (/[A-Z]/.test(char)) {
@@ -162,10 +151,9 @@ function checkAndScoreWords() {
         }
     }
 
-    // 4. Check columns for words
+    // Vertical check
     for (let c = 0; c < gridSize; c++) {
-        let word = '';
-        let positions = [];
+        let word = '', positions = [];
         for (let r = 0; r <= gridSize; r++) {
             let char = r < gridSize ? board[r][c] : '';
             if (/[A-Z]/.test(char)) {
@@ -179,46 +167,25 @@ function checkAndScoreWords() {
         }
     }
 
-    // 5. Update score for current player
+    // Update score
     if (newScore > 0) {
-        if (currentPlayer === 1) {
-            score1.textContent = parseInt(score1.textContent) + newScore;
-        } else {
-            score2.textContent = parseInt(score2.textContent) + newScore;
-        }
+        const scoreDisplay = currentPlayer === 1 ? score1 : score2;
+        scoreDisplay.textContent = parseInt(scoreDisplay.textContent) + newScore;
+    } else {
+        lastScored.textContent = '';
     }
 
-    // Clear last scored message if no score
-    if (newScore === 0) {
-        document.getElementById('lastScored').textContent = '';
-    }
-
-    // 6. Check if the game is over
     checkGameEnd();
 }
 
-
-function highlightCells(type, fixed, start, end) {
-    for (let i = start; i <= end; i++) {
-        const cell = type === 'row'
-            ? document.querySelector(`[data-row="${fixed}"][data-col="${i}"]`)
-            : document.querySelector(`[data-row="${i}"][data-col="${fixed}"]`);
-        cell.style.backgroundColor = 'lightgreen';
-    }
-}
-
-
+// Game end check
 function checkGameEnd() {
     const allCells = document.querySelectorAll('.grid-cell');
-    let isFull = true;
-
-    allCells.forEach(cell => {
-        if (cell.value === '') {
-            isFull = false;
-        }
-    });
+    const isFull = [...allCells].every(cell => cell.value !== '');
 
     if (isFull) {
+        gameEnded = true;
+
         const p1 = parseInt(score1.textContent);
         const p2 = parseInt(score2.textContent);
         let message = '';
@@ -237,8 +204,8 @@ function checkGameEnd() {
     }
 }
 
+// Restart button
 document.getElementById('restartBtn').addEventListener('click', () => {
-    // Clear board
     const cells = document.querySelectorAll('.grid-cell');
     cells.forEach(cell => {
         cell.value = '';
@@ -246,10 +213,11 @@ document.getElementById('restartBtn').addEventListener('click', () => {
         cell.style.backgroundColor = '';
     });
 
-    // Reset game state
     currentPlayer = 1;
-    currentPlayerDisplay.textContent = 'Player 1';
+    gameEnded = false;
     score1.textContent = '0';
     score2.textContent = '0';
+    currentPlayerDisplay.textContent = 'Player 1';
+    lastScored.textContent = '';
     scoredWords.clear();
 });
