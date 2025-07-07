@@ -1,12 +1,38 @@
 /* General Styling */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom right, #f3f4f6, #dbeafe);
     text-align: center;
     padding: 20px;
     margin: 0;
     min-height: 100vh;
+    color: #111827;
+    position: relative;
+    z-index: 0;
 }
+
+
+#bgVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+}
+
+/* Optional: overlay to darken/lighten video for readability */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.364);
+    /* Light overlay */
+    z-index: -1;
+}
+
 
 /* Title */
 h1 {
@@ -114,19 +140,6 @@ h1 {
 
 #toggleMusicBtn:hover {
     transform: scale(1.1);
-}
-
-
-/* For Mobile Friendliness */
-#grid {
-    display: grid;
-    grid-template-columns: repeat(20, 32px);
-    grid-template-rows: repeat(20, 32px);
-    gap: 3px;
-    justify-content: center;
-    margin: auto;
-    max-width: 100%;
-    overflow-x: auto;
 }
 
 
